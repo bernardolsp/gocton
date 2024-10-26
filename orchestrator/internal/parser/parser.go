@@ -37,7 +37,6 @@ func ParseTaskFile(filePath string) (*TaskFile, error) {
 	}
 
 	log.Printf("Workflow: %v", taskFile.Workflow)
-
 	return &taskFile, nil
 }
 

@@ -1,0 +1,9 @@
+services:
+  orchestrator:
+    build:
+      dockerfile: dev.Dockerfile
+      context: ./
+    volumes:
+      - ./:/app
+    ports:
+    - 8080:8080
