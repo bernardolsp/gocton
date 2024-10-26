@@ -3,24 +3,25 @@ package main
 import (
 	"log"
 
-	"github.com/bernardolsp/gocton/orchestrator/internal/distributor"
-	"github.com/bernardolsp/gocton/orchestrator/internal/engine"
-	"github.com/bernardolsp/gocton/orchestrator/internal/nodemanager"
-	"github.com/bernardolsp/gocton/orchestrator/internal/statemanager"
-	"github.com/bernardolsp/gocton/orchestrator/pkg/communication"
+	"github.com/bernardolsp/gocton/orchestrator/internal/parser"
 )
 
 func main() {
-	comm, err := communication.NewCommunicator()
-	if err != nil {
-		log.Fatalf("Failed to initialize communicator: %v", err)
-	}
+	// comm, err := communication.NewCommunicator()
+	// if err != nil {
+	// 	log.Fatalf("Failed to initialize communicator: %v", err)
+	// }
 
-	engine := engine.NewWorkflowEngine()
-	distributor := distributor.NewTaskDistributor()
-	nodeManager := nodemanager.NewNodeManager()
-	stateManager := statemanager.NewStateManager()
+	// engine := engine.NewWorkflowEngine()
+	// distributor := distributor.NewTaskDistributor()
+	// nodeManager := nodemanager.NewNodeManager()
+	// stateManager := statemanager.NewStateManager()
 
-	// TODO: Implement main orchestrator logic
 	log.Println("Orchestrator started")
+
+	p, err := parser.ParseTaskFile("./example_taskfile.yml")
+	if err != nil {
+		log.Fatalf("Error, %v", err)
+	}
+	parser.PrintJobsAndSteps(p)
 }
