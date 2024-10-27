@@ -25,8 +25,8 @@ func Initialize(c *Communicator) (Messager, error) {
 	case "rabbit":
 		m, err := initialize_rabbitmq(c.ConnectionString, "test")
 		if err != nil {
-			log.Fatalf("Error initializing rabbitmq, %v", err)
-			return messager, nil
+			log.Printf("Error initializing rabbitmq, %v", err)
+			return messager, err
 		}
 		return m, err
 	default:

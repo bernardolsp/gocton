@@ -11,12 +11,12 @@ import (
 func initialize_rabbitmq(c string, q string) (Messager, error) {
 	conn, err := amqp.Dial(c)
 	if err != nil {
-		log.Fatalf("Error dialing rabbitmq, %v", err)
+		log.Printf("Error dialing rabbitmq, %v", err)
 		return Messager{nil, nil, ""}, err
 	}
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("Error accessing channel, %v", err)
+		log.Printf("Error accessing channel, %v", err)
 		return Messager{nil, nil, ""}, err
 	}
 

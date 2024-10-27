@@ -29,6 +29,9 @@ type Step struct {
 func (p Parser) Initialize() {
 	log.Println("parser has initialized...")
 	log.Println("Queue to use is", p.Messager.Queue)
+	log.Println("Initializing the parser worker... ")
+	p.ListenAndParse()
+
 }
 
 func (p Parser) ParseTaskFile(filePath string) (*TaskFile, error) {
@@ -71,4 +74,30 @@ func (p Parser) PrintJobsAndSteps(taskFile *TaskFile) {
 			log.Fatalf("Error sending message to messager, %v", err)
 		}
 	}
+}
+
+func (p *Parser) ListenAndParse() {
+	// This function will start a Messenger Processor
+	msgs, err := p.Messager.Channel.Consume(
+		p.Messager.Queue, // queue
+		"this",           // consumer
+		true,             // auto-ack
+		false,            // exclusive
+		false,            // no-local
+		false,            // no-wait
+		nil,              // args
+	)
+	if err != nil {
+		log.Fatal("Failed to register a consumer. err:", err)
+	}
+
+	var forever chan struct{}
+	go func() {
+		for d := range msgs {
+			log.Printf("Received a message: %s", d.Body)
+		}
+	}()
+
+	log.Printf(" [*] Waiting for messages.")
+	<-forever
 }
