@@ -2,11 +2,17 @@ package main
 
 import (
 	"log"
+	"sync"
 	"time"
 
 	"github.com/bernardolsp/gocton/orchestrator/internal/parser"
 	"github.com/bernardolsp/gocton/orchestrator/pkg/communication"
 )
+
+var retryAmount = 5
+var retryDelay = 2 * time.Second
+var initialDelay = retryDelay
+var wg sync.WaitGroup
 
 func bootstrap_messager() *communication.Messager {
 	var m communication.Messager
