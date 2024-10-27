@@ -1,0 +1,26 @@
+services:
+  rabbitmq: 
+    image: rabbitmq:3-management-alpine
+    ports:
+        - 5672:5672
+        - 15672:15672
+  orchestrator:
+    build:
+      dockerfile: dev.Dockerfile
+      context: ./orchestrator
+    volumes:
+      - ./orchestrator/:/app
+    ports:
+    - 8080:8080
+    depends_on:
+      - rabbitmq
+  api: 
+    build: 
+      dockerfile: Dockerfile
+      context: ./api
+    ports:
+    - 8000:8000
+    develop:
+      watch:
+        - path: ./api
+          action: rebuild

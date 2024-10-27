@@ -41,7 +41,7 @@ func (m *Messager) SendMessage(queue string, message []byte) error {
 		false,
 		false,
 		amqp.Publishing{
-			ContentType: "text/plain",
+			ContentType: "application/json",
 			Body:        message,
 		},
 	)

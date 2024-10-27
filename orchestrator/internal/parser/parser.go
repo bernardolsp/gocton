@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 
@@ -26,12 +27,14 @@ type Step struct {
 	Run string `yaml:"run"`
 }
 
-func (p Parser) Initialize() {
-	log.Println("parser has initialized...")
-	log.Println("Queue to use is", p.Messager.Queue)
-	log.Println("Initializing the parser worker... ")
-	p.ListenAndParse()
+type JobMessage struct {
+	Index   int      `json:"index"`
+	JobName string   `json:"job_name"`
+	Steps   []string `json:"steps"`
+}
 
+func (p Parser) Initialize() {
+	p.ListenAndParse()
 }
 
 func (p Parser) ParseTaskFile(filePath string) (*TaskFile, error) {
@@ -55,7 +58,7 @@ func (p Parser) ParseTaskFile(filePath string) (*TaskFile, error) {
 
 func (p Parser) PrintJobsAndSteps(taskFile *TaskFile) {
 	// Iterate through the workflow to maintain the order of jobs
-	for _, jobName := range taskFile.Workflow {
+	for index, jobName := range taskFile.Workflow {
 		job, exists := taskFile.Jobs[jobName]
 		if !exists {
 			log.Printf("Warning: Job '%s' mentioned in workflow but not defined", jobName)
@@ -67,9 +70,16 @@ func (p Parser) PrintJobsAndSteps(taskFile *TaskFile) {
 			steps[i] = step.Run
 		}
 
-		log.Printf("Job: %s. Steps: %v", jobName, steps)
-		log.Println("Sending message to queue, ", p.Messager.Queue)
-		err := p.Messager.SendMessage(p.Messager.Queue, []byte("This is a test"))
+		jobMessage := JobMessage{
+			Index:   index,
+			JobName: jobName,
+			Steps:   steps,
+		}
+		message, err := json.Marshal(jobMessage)
+		if err != nil {
+			log.Fatalf("Error marshalling job message, %v", err)
+		}
+		err = p.Messager.SendMessage(p.Messager.Queue, message)
 		if err != nil {
 			log.Fatalf("Error sending message to messager, %v", err)
 		}

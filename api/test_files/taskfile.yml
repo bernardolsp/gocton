@@ -1,0 +1,20 @@
+version: 1.0
+
+jobs:
+  build:
+    steps:
+      - run: go mod download
+      - run: go build ./...
+
+  test:
+    steps:
+      - run: go test ./...
+
+  deploy:
+    steps:
+      - run: aws s3 cp ./myapp s3://my-bucket/
+
+workflow:
+  - build
+  - test
+  - deploy
